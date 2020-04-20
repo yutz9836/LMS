@@ -15,16 +15,34 @@ struct ProfileHost: View {
     @State var draftProfile = Profile.default
 
     var body: some View {
+        
         VStack(alignment: .leading, spacing: 20) {
+            
             HStack {
+                
+                if self.mode?.wrappedValue == .active{
+                    //下面那一段跟網頁上的不一樣，網頁的會錯
+                    Button(action:{
+                        self.draftProfile = self.userData.profile
+                        self.mode?.animation().wrappedValue = .inactive
+                    }){Text("cancel")}
+                }
+                
+                
                 Spacer()
                 EditButton()
             }
             
-            if self.mode?.wrappedValue == .inactive{
+            if self.mode?.wrappedValue == .inactive {
                 ProfileSummary(profile: userData.profile)
-            }else {
-                Text("profile editor")
+            } else {
+                ProfileEditor(profile: $draftProfile)
+                    .onAppear {
+                        self.draftProfile = self.userData.profile
+                    }
+                    .onDisappear {
+                        self.userData.profile = self.draftProfile
+                    }
             }
             
             
